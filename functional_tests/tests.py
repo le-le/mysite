@@ -29,7 +29,11 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a to-do item')
 
         inputbox.send_keys('Buy peacock feathers')
+        #按回车键后，被带到一个新的url
+        #这个页面的待办事项清单中显示了“1:Buy peacock feathers”
         inputbox.send_keys(Keys.ENTER)
+        edith_list_url = self.browser.current_url
+        self.assertRegex(edith_list_url,'/lists/.+')
 
         inputbox = self.browser.find_element_by_id('id_new_item')
 
@@ -38,6 +42,35 @@ class NewVisitorTest(LiveServerTestCase):
 
         self.check_for_row_in_list_table('1:Buy peacock feathers')
         self.check_for_row_in_list_table('2:Use peacock feathers to make a fly')
+        
+        #我们使用一个新的浏览器回话
+        #确保伊迪斯的信息不会从cookie中泄露出来
+        self.browser.quit()
+        self.brwoser = webdriver.Chrome()
+
+        #弗朗西斯访问首页
+        #页面中看不到伊迪斯的清单
+        self.brwoser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers',page_text)
+        self.assertNotIn('make a fly',page_text)
+
+        #弗朗西斯输入一个新的待办事项，新建一个清单
+        #他不像伊迪斯兴趣盎然
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Key.ENTER)
+
+        #弗朗西斯获得了他的唯一URL
+        francis_list_url = self.browser.current_url
+        self.assertRegex(francis_list_url,'/lists/.+')
+        self.assertNotEqual(francis_list_url,edith_list_url)
+
+        #这个页面必须没有伊迪斯的清单
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers',page_text)
+        self.assertNotIn('make a fly',page_text)
+        
         self.fail('Finish the test')
 
 
