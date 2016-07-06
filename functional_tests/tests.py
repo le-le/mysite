@@ -46,11 +46,11 @@ class NewVisitorTest(LiveServerTestCase):
         #我们使用一个新的浏览器回话
         #确保伊迪斯的信息不会从cookie中泄露出来
         self.browser.quit()
-        self.brwoser = webdriver.Chrome()
+        self.browser = webdriver.Chrome()
 
         #弗朗西斯访问首页
         #页面中看不到伊迪斯的清单
-        self.brwoser.get(self.live_server_url)
+        self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers',page_text)
         self.assertNotIn('make a fly',page_text)
@@ -59,7 +59,7 @@ class NewVisitorTest(LiveServerTestCase):
         #他不像伊迪斯兴趣盎然
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Buy milk')
-        inputbox.send_keys(Key.ENTER)
+        inputbox.send_keys(Keys.ENTER)
 
         #弗朗西斯获得了他的唯一URL
         francis_list_url = self.browser.current_url
