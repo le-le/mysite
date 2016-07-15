@@ -71,7 +71,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertNotIn('Buy peacock feathers',page_text)
         self.assertNotIn('make a fly',page_text)
         
-        self.fail('Finish the test')
+#        self.fail('Finish the test')
 
 
     def test_layout_and_styling(self):
